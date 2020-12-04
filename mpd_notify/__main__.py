@@ -1,17 +1,82 @@
+import argparse
+import sys
+import time
+
 from .mpd import MPD
 from .notify import Notify
 
 
-def main():
-    MPDClient = MPD("~/Music")
-    NotifManager = Notify()
-    while True:
+def get_args():
+    arg = argparse.ArgumentParser(description="MPD notification handler")
+
+    arg.add_argument("--host", metavar="localhost", help="Location of the mpd host")
+    arg.add_argument("--port", metavar="6600", help="The port which mpd is running")
+    arg.add_argument("--id", metavar="6600", help="What the notification id is")
+    arg.add_argument(
+        "--music-dir", metavar="~/Music", help="The directory which mpd is playing from"
+    )
+    arg.add_argument(
+        "--watch",
+        action="store_true",
+        help="Continously show notifications on song change",
+    )
+
+    return arg
+
+
+def parse_args(parser):
+    args = parser.parse_args()
+
+    mpd_host = args.host if args.host else "localhost"
+    mpd_port = args.port if args.port else 6600
+    music_dir = args.music_dir if args.music_dir else "~/Music"
+
+    notify_id = args.id if args.id else 660
+
+    try:
+        MPDClient = MPD(mpd_host, mpd_port, music_dir)
+    except ConnectionRefusedError:
+        print("Could not connect to mpd, exiting...")
+        exit(1)
+
+    NotifManager = Notify(notification_id=notify_id)
+
+    if args.watch:
+        try:
+            log = [None, None]
+            while True:
+                log.append(MPDClient.get_state())
+
+                if log[-1] == "stop":
+                    time.sleep(1)
+                    continue
+
+                if log[-1] != "stop" and log[-2] == "stop":
+                    MPDClient.update()
+
+                NotifManager.notify(
+                    MPDClient.get_title(),
+                    "{} - {}".format(MPDClient.get_artist(), MPDClient.get_album()),
+                    icon=MPDClient.get_cover(),
+                )
+                MPDClient.watch()
+        except KeyboardInterrupt:
+            sys.exit(0)
+    else:
+        if MPDClient.get_state() == "stop":
+            print("Nothing playing...")
+            sys.exit(0)
+
         NotifManager.notify(
             MPDClient.get_title(),
             "{} - {}".format(MPDClient.get_artist(), MPDClient.get_album()),
             icon=MPDClient.get_cover(),
         )
-        MPDClient.watch()
+
+
+def main():
+    parser = get_args()
+    parse_args(parser)
 
 
 if __name__ == "__main__":
