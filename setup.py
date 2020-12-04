@@ -22,6 +22,6 @@ setup(
     license="GPLv2",
     packages=["mpd_notify"],
     entry_points={"console_scripts": ["mpd-notify=mpd_notify.__main__:main"]},
-    install_requires=["python-mpd2"],
+    install_requires=["python-mpd2", "mutagen", "Pillow", "notify2"],
     zip_safe=False,
 )
