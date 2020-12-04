@@ -20,8 +20,8 @@ setup(
     author="slapelachie",
     author_email="lslape@slapelachie.xyz",
     license="GPLv2",
-    packages=["mpd-notify"],
-    entry_points={"console_scripts": ["mpd-notify=mpd-notify.__main__:main"]},
+    packages=["mpd_notify"],
+    entry_points={"console_scripts": ["mpd-notify=mpd_notify.__main__:main"]},
     install_requires=["python-mpd2"],
     zip_safe=False,
 )
