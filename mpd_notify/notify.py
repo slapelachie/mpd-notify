@@ -8,14 +8,11 @@ class Notify:
 
         notify2.init(self.app_name)
 
-    def notify(self, title, message, icon=None):
-        if icon:
-            n = notify2.Notification(title, message=message, icon=icon)
-        else:
-            n = notify2.Notification(title, message=message)
+    def notify(self, title, message, icon=""):
+        notification = notify2.Notification(title, message=message, icon=icon)
+        notification.id = self.id
 
-        n.id = self.id
-        n.show()
+        notification.show()
 
 
 """

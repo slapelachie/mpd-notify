@@ -56,10 +56,13 @@ class MPD:
             img.save(out_path)
             return out_path
         except:
-            return None
+            return ""
 
     def get_file(self):
         return self.mpd.currentsong().get("file")
+
+    def get_fullfile(self):
+        return os.path.join(self.music_dir, self.file)
 
     def get_title(self):
         return self.mpd.currentsong().get("title")

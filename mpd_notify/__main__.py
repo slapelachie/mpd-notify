@@ -10,7 +10,7 @@ from .notify import Notify
 def get_args():
     arg = argparse.ArgumentParser(
         description="MPD notification handler",
-        usage="{} [options]".format(__title__),
+        usage="mpd-notify [options]",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
@@ -54,7 +54,7 @@ def parse_args(parser):
                 pid = os.fork()
                 if pid > 0:
                     print("Forked to {}".format(pid))
-                    sys.exit()
+                    sys.exit(0)
 
             log = [None, None]
             while True:
@@ -67,11 +67,14 @@ def parse_args(parser):
                 if log[-1] != "stop" and log[-2] == "stop":
                     MPDClient.update()
 
-                NotifManager.notify(
-                    MPDClient.get_title(),
-                    "{} - {}".format(MPDClient.get_artist(), MPDClient.get_album()),
-                    icon=MPDClient.get_cover(),
-                )
+                if MPDClient.get_title() == None:
+                    NotifManager.notify(MPDClient.get_fullfile(), "")
+                else:
+                    NotifManager.notify(
+                        MPDClient.get_title(),
+                        "{} - {}".format(MPDClient.get_artist(), MPDClient.get_album()),
+                        icon=MPDClient.get_cover(),
+                    )
 
                 MPDClient.watch()
         except KeyboardInterrupt:
@@ -81,11 +84,14 @@ def parse_args(parser):
             print("Nothing playing...")
             sys.exit(0)
 
-        NotifManager.notify(
-            MPDClient.get_title(),
-            "{} - {}".format(MPDClient.get_artist(), MPDClient.get_album()),
-            icon=MPDClient.get_cover(),
-        )
+        if MPDClient.get_title() == None:
+            NotifManager.notify(MPDClient.get_fullfile(), "")
+        else:
+            NotifManager.notify(
+                MPDClient.get_title(),
+                "{} - {}".format(MPDClient.get_artist(), MPDClient.get_album()),
+                icon=MPDClient.get_cover(),
+            )
 
 
 def main():
