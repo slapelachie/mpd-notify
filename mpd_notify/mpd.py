@@ -83,7 +83,7 @@ class MPD:
 
             # prevent multiple undesired notification
             if old_file != self.file:
-                time.sleep(1)
+                time.sleep(0.25)
                 break
 
 

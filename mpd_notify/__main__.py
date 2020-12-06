@@ -1,6 +1,7 @@
 import argparse
 import sys
 import time
+import os
 
 from .mpd import MPD
 from .notify import Notify
@@ -20,6 +21,7 @@ def get_args():
         action="store_true",
         help="Continously show notifications on song change",
     )
+    arg.add_argument("--fork", action="store_true", help="Fork process to background")
 
     return arg
 
@@ -43,6 +45,12 @@ def parse_args(parser):
 
     if args.watch:
         try:
+            if args.fork:
+                pid = os.fork()
+                if pid > 0:
+                    print("Forked to {}".format(pid))
+                    sys.exit()
+
             log = [None, None]
             while True:
                 log.append(MPDClient.get_state())
