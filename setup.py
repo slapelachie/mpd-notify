@@ -4,7 +4,7 @@ LONG_DESC = open("README.md").read()
 
 setup(
     name="mpd-notify",
-    version="1.0.0a",
+    version="1.0.0b0",
     description="Notification wrapper for mpd",
     long_description_content_type="text/markdown",
     long_description=LONG_DESC,

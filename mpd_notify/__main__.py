@@ -8,13 +8,19 @@ from .notify import Notify
 
 
 def get_args():
-    arg = argparse.ArgumentParser(description="MPD notification handler")
+    arg = argparse.ArgumentParser(
+        description="MPD notification handler",
+        usage="{} [options]".format(__title__),
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
-    arg.add_argument("--host", metavar="localhost", help="Location of the mpd host")
-    arg.add_argument("--port", metavar="6600", help="The port which mpd is running")
-    arg.add_argument("--id", metavar="6600", help="What the notification id is")
+    arg.add_argument("--host", default="localhost", help="Location of the mpd host")
     arg.add_argument(
-        "--music-dir", metavar="~/Music", help="The directory which mpd is playing from"
+        "--port", default=6600, type=int, help="The port which mpd is running"
+    )
+    arg.add_argument("--id", default=660, type=int, help="What the notification id is")
+    arg.add_argument(
+        "--music-dir", default="~/Music", help="The directory which mpd is playing from"
     )
     arg.add_argument(
         "--watch",
@@ -32,7 +38,6 @@ def parse_args(parser):
     mpd_host = args.host if args.host else "localhost"
     mpd_port = args.port if args.port else 6600
     music_dir = args.music_dir if args.music_dir else "~/Music"
-
     notify_id = args.id if args.id else 660
 
     try:
@@ -67,6 +72,7 @@ def parse_args(parser):
                     "{} - {}".format(MPDClient.get_artist(), MPDClient.get_album()),
                     icon=MPDClient.get_cover(),
                 )
+
                 MPDClient.watch()
         except KeyboardInterrupt:
             sys.exit(0)
